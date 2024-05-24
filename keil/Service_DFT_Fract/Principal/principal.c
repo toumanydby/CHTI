@@ -1,10 +1,7 @@
-
-
 #include "DriverJeuLaser.h"
 #include "ServiceJeuLaser.h"
-#include "../DFT_Frac/DFT_frac.h"
 #include "../DFT_Frac/Signal_4_12.h"
-
+extern unsigned int DFT_fract(unsigned short int *, int );
 
 long int res;
 

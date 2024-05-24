@@ -1,9 +1,9 @@
 #include "CosSin_Fract_1_15.h"
 
 int sommeCos, sommeSin; 
+int prodCos, prodSin;
 
-
-
+/*
 unsigned int DFT_fract(unsigned short int * signal, int k){
 	sommeCos = 0;
 	sommeSin = 0;	
@@ -20,8 +20,11 @@ unsigned int DFT_fract(unsigned short int * signal, int k){
 		sommeSin+=( unsigned short int )signal[i]* (short int) TabSin[(k*i)%64];
 	}
 	
-	int prodCos = sommeCos*sommeCos;
-	int prodSin = sommeSin*sommeSin;
+	short int sommeCosTronque = sommeCos >> 16;
+	short int sommeSinTronque = sommeSin >> 16 ;
+
+	prodCos = sommeCosTronque*sommeCosTronque ;
+	prodSin = sommeSinTronque*sommeSinTronque;
 	
 	return  prodSin + prodCos;
-}
+}*/

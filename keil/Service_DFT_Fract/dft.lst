@@ -4,7 +4,104 @@
 ARM Macro Assembler    Page 1 
 
 
-                       
+    1 00000000                 PRESERVE8
+    2 00000000                 THUMB
+    3 00000000         
+    4 00000000                 extern           LeSignal
+    5 00000000                 extern           TabCos
+    6 00000000                 extern           TabSin
+    7 00000000                 export           DFT_fract
+    8 00000000         ; ====================== zone de reservation de donnees,
+                         ======================================
+    9 00000000         ;Section RAM (read only) :
+   10 00000000                 area             mesdata,data,readonly
+   11 00000000         
+   12 00000000         
+   13 00000000         ;Section RAM (read write):
+   14 00000000                 area             maram,data,readwrite
+   15 00000000         
+   16 00000000         ; ======================================================
+                       =========================================
+   17 00000000         
+   18 00000000         
+   19 00000000         
+   20 00000000         
+   21 00000000         ;Section ROM code (read only) :
+   22 00000000                 area             moncode,code,readonly
+   23 00000000         ; écrire le code ici
+   24 00000000         
+   25 00000000         
+   26 00000000         DFT_fract
+                               proc
+   27 00000000         ; On push les registres qu'on va use
+   28 00000000 E92D 4FF0       push             {r4-r11, lr}
+   29 00000004         
+   30 00000004         ; On initialise les var
+   31 00000004 F04F 0200       mov              r2, #0      ; sommeCos
+   32 00000008 F04F 0300       mov              r3, #0      ; sommeSin
+   33 0000000C F04F 0600       mov              r6, #0      ; i index
+   34 00000010 4F11            ldr              r7, = TabCos ;
+   35 00000012 F8DF 8048       ldr              r8, = TabSin
+   36 00000016         
+   37 00000016         loop
+   38 00000016 2E40            cmp              r6, #64
+   39 00000018 DA13            bge              endLoop
+   40 0000001A         
+   41 0000001A F830 4016       ldrh             r4, [r0,r6, LSL #1] ; signal[i]
+                                                            
+   42 0000001E FB01 F506       mul              r5, r1,r6   ; k * i
+   43 00000022 EA4F 2515       lsr              r5, r5, #8  ; (k*i)%64 on fait 
+                                                            un decalage de 8 2 
+                                                            a la puissance 8 eg
+                                                            al 64
+   44 00000026 F937 A005       ldrsh            r10, [r7,r5] ; TabCos[(k*i)%64]
+                                                            
+   45 0000002A         
+   46 0000002A FB04 F90A       mul              r9, r4,r10  ; produit donnant s
+                                                            ommeCos
+   47 0000002E 444A            add              r2,r2,r9    ; on augmente somme
+                                                            Cos de r9
+   48 00000030         
+   49 00000030 F938 A005       ldrsh            r10, [r8,r5] ; TabSin[(k*i)%64]
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                                                            
+   50 00000034         
+   51 00000034 FB04 F90A       mul              r9, r4,r10  ; produit donnant s
+                                                            ommeSin
+   52 00000038 444B            add              r3,r3,r9    ; on augmente somme
+                                                            Sin de r9
+   53 0000003A         
+   54 0000003A F106 0601       add              r6, r6, #1  ; on incremente l'i
+                                                            ndex i 
+   55 0000003E         
+   56 0000003E F7FF FFEA       bl               loop
+   57 00000042         endLoop
+   58 00000042         
+   59 00000042 FBE2 4502       UMLAL            r4, r5, r2, r2 ; On stocke dans
+                                                             r4 et r5 le produi
+                                                            t de r2 et r2 
+   60 00000046 FBE3 6703       UMLAL            r6, r7, r3, r3 ; On stocke dans
+                                                             r4 et r5 le produi
+                                                            t de r2 et r2 
+   61 0000004A         
+   62 0000004A EB04 0206       add              r2, r4,r6   ; on prend juste le
+                                                            s parties ayant les
+                                                             bits de poids fort
+                                                             pour ce coup
+   63 0000004E         ; donc juste les registres r4 et r6
+   64 0000004E 6010            str              r0, [r2]
+   65 00000050 E8BD 4FF0       pop              {r4-r11, lr}
+   66 00000054 4770            bx               lr
+   67 00000056                 endp
+   68 00000056         
+   69 00000056                 END
+              00 00 00000000 
+              00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=.\obj\dft.d -o.\obj\dft.o -I.\RTE\_Simu -IC:\Programdata\Keil\Arm\
 Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include -IC:\Programdata\Keil\Arm\Packs\Keil\S
@@ -12,4 +109,104 @@ TM32F1xx_DFP\2.3.0\Device\Include --predefine="__EVAL SETA 1" --predefine="__MI
 CROLIB SETA 1" --predefine="__UVISION_VERSION SETA 534" --predefine="_RTE_ SETA
  1" --predefine="STM32F10X_MD SETA 1" --predefine="_RTE_ SETA 1" --list=dft.lst
  DFT_Frac\DFT.s
-335 symbols in table
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+mesdata 00000000
+
+Symbol: mesdata
+   Definitions
+      At line 10 in file DFT_Frac\DFT.s
+   Uses
+      None
+Comment: mesdata unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+maram 00000000
+
+Symbol: maram
+   Definitions
+      At line 14 in file DFT_Frac\DFT.s
+   Uses
+      None
+Comment: maram unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+DFT_fract 00000000
+
+Symbol: DFT_fract
+   Definitions
+      At line 26 in file DFT_Frac\DFT.s
+   Uses
+      At line 7 in file DFT_Frac\DFT.s
+Comment: DFT_fract used once
+endLoop 00000042
+
+Symbol: endLoop
+   Definitions
+      At line 57 in file DFT_Frac\DFT.s
+   Uses
+      At line 39 in file DFT_Frac\DFT.s
+Comment: endLoop used once
+loop 00000016
+
+Symbol: loop
+   Definitions
+      At line 37 in file DFT_Frac\DFT.s
+   Uses
+      At line 56 in file DFT_Frac\DFT.s
+Comment: loop used once
+moncode 00000000
+
+Symbol: moncode
+   Definitions
+      At line 22 in file DFT_Frac\DFT.s
+   Uses
+      None
+Comment: moncode unused
+4 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+LeSignal 00000000
+
+Symbol: LeSignal
+   Definitions
+      At line 4 in file DFT_Frac\DFT.s
+   Uses
+      None
+Comment: LeSignal unused
+TabCos 00000000
+
+Symbol: TabCos
+   Definitions
+      At line 5 in file DFT_Frac\DFT.s
+   Uses
+      At line 34 in file DFT_Frac\DFT.s
+Comment: TabCos used once
+TabSin 00000000
+
+Symbol: TabSin
+   Definitions
+      At line 6 in file DFT_Frac\DFT.s
+   Uses
+      At line 35 in file DFT_Frac\DFT.s
+Comment: TabSin used once
+3 symbols
+346 symbols in table

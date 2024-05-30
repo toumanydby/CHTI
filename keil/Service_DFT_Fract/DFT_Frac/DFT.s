@@ -20,7 +20,7 @@
 
 ;Section ROM code (read only) :
     area    moncode,code,readonly
-; écrire le code ici
+; Ã©crire le code ici
 
 
 DFT_fract proc 
@@ -62,7 +62,7 @@ endLoop
 	add r2, r4,r6 ; on prend juste les parties ayant les bits de poids fort pour ce coup
 					; donc juste les registres r4 et r6
 	str r0, [r2]
-	pop {r4-r11, lr}
+	pop {r4-r11, pc}
 	bx lr
 	endp
 
